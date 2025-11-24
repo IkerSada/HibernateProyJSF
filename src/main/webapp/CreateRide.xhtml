@@ -1,28 +1,90 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
 <html xmlns="http://www.w3.org/1999/xhtml"
-xmlns:ui="http://java.sun.com/jsf/facelets"
-xmlns:h="http://java.sun.com/jsf/html"
-xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:o="http://omnifaces.org/ui">
+<ui:composition>
+
 <f:view>
-<h:head><title>Create Ride</title></h:head>
-<h:body>
-<h:form>
-<h3>Mesedez, sartu izena eta pasahitza </h3>
-<table>
-<tr>
-<td>Izena:</td>
-<td><h:inputText id="izen" value="#{login.izena}"></h:inputText></td>
-</tr>
-<tr>
-<td>Pasahitza:</td>
-<td><h:inputSecret id="pass" value="#{login.pasahitza}"></h:inputSecret></td>
-</tr>
-</table>
-<p>
-<h:commandButton value="Onartu" action="#{login.egiaztatu}"/>
-</p>
-</h:form>
-</h:body>
+	<h:head>
+		<title>CREATE RIDE</title>
+	</h:head>
+
+	<h:body>
+		<h:form id="nireForm">
+			<h3>CREATE RIDE</h3>
+			<table>
+				<tr>
+					<td>Depart City:</td>
+					<td>
+						<h:inputText id="departCity" value="#{createRideBean.origin}">
+							<f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚV\s]+$" />
+						</h:inputText>
+					</td>
+					<td><h:message for="departCity" style="color:red" /></td>
+				</tr>
+				<tr>
+					<td>Arrival City:</td>
+					<td>
+						<h:inputText id="arrivalCity"  value="#{createRideBean.destination}">
+							<f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚV\s]+$" />
+						</h:inputText>
+					</td>
+					<td><h:message for="arrivalCity" style="color:red" /></td>
+				</tr>
+				<tr>
+					<td>Number of seats: </td>
+					<td>
+						<h:inputText id="seats"  value="#{createRideBean.seats}">
+							<f:validateLongRange minimum="1" maximum="500" />
+						</h:inputText>
+					</td>
+					<td><h:message for="seats" style="color:red" /></td>
+				</tr>
+				<tr>
+					<td>Price:</td>
+					<td>
+						<h:inputText id="price"  value="#{createRideBean.price}">
+							<f:validateLongRange minimum="1" maximum="500" />
+						</h:inputText>
+					</td>
+					<td><h:message for="price" style="color:red" /></td>
+				</tr>
+				<tr>
+					<td>Date:</td>
+					<td>
+						<p:calendar id="data" value="#{createRideBean.date}" navigator="true" mode="inline" />
+					</td>
+				</tr>
+			</table>
+			
+			<p>
+				<h:commandButton value="Create Ride" action="#{createRideBean.createRide}" />
+			</p>
+
+			<!-- Datuak erakusteko - WEB-ean agertuko da -->
+			<h:panelGroup id="sartutakoDatuak">
+				<h:outputText value="Created Ride: " 
+					style="font-weight: bold; display: block; margin-top: 15px;" 
+					rendered="#{not empty createRideBean.datua}" />
+				<h:outputText value="#{createRideBean.datua}" 
+					style="display: block; margin-top: 10px; padding: 10px; 
+					       background-color: #f0f8ff; border: 2px solid #4682b4; 
+					       border-radius: 5px; color: #2e8b57; font-size: 14px;" 
+					rendered="#{not empty createRideBean.datua}" />
+			</h:panelGroup>
+
+			<h:messages id="mezuak" style="color:blue; margin-top: 10px;" />
+		</h:form>
+		
+		<h4>TO QUERY RIDES:</h4>
+ 		<h:link value="- QueryRides" outcome="QueryRides" />
+		
+	</h:body>
 </f:view>
+ </ui:composition>
 </html>
