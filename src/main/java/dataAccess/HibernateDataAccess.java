@@ -20,8 +20,12 @@ public class HibernateDataAccess {
        ============================================================ */
 
     public void initializeDB() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Transaction tx = session.beginTransaction();
+    	Session session = HibernateUtil.getSessionFactory().openSession();
+    	Transaction tx = session.beginTransaction();
+    	// operaciones
+    	tx.commit();
+    	session.close();
+
 
         Calendar today = Calendar.getInstance();
         int month = today.get(Calendar.MONTH) + 1;  
