@@ -20,22 +20,22 @@ public class HibernateDataAccess {
        ============================================================ */
 
     public void initializeDB() {
-    	Session session = HibernateUtil.getSessionFactory().openSession();
-    	Transaction tx = session.beginTransaction();
-    	// operaciones
-    	tx.commit();
-    	session.close();
-
-
-        Calendar today = Calendar.getInstance();
-        int month = today.get(Calendar.MONTH) + 1;  
-        int year = today.get(Calendar.YEAR);
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = null;
 
         try {
+            tx = session.beginTransaction();  // inicia la transacción
+
+            Calendar today = Calendar.getInstance();
+            int month = today.get(Calendar.MONTH) + 1;
+            int year = today.get(Calendar.YEAR);
+
+            // Crear drivers
             Driver driver1 = new Driver("driver1@gmail.com", "Aitor Fernandez");
             Driver driver2 = new Driver("driver2@gmail.com", "Ane Gaztañaga");
             Driver driver3 = new Driver("driver3@gmail.com", "Test driver");
 
+            // Añadir rides a los drivers
             driver1.addRide("Donostia", "Bilbo", newDate(year, month, 15), 4, 7);
             driver1.addRide("Donostia", "Gasteiz", newDate(year, month, 6), 4, 8);
             driver1.addRide("Bilbo", "Donostia", newDate(year, month, 25), 4, 4);
@@ -45,20 +45,22 @@ public class HibernateDataAccess {
 
             driver3.addRide("Bilbo", "Donostia", newDate(year, month, 14), 1, 3);
 
+            // Guardar drivers en la base de datos (cascade guarda los rides)
             session.persist(driver1);
             session.persist(driver2);
             session.persist(driver3);
 
-            tx.commit();
-
+            tx.commit();  // commit solo una vez al final
             System.out.println("Hibernate database initialized");
 
         } catch (Exception e) {
-            tx.rollback();
+            if (tx != null && tx.isActive()) {
+                tx.rollback();  // rollback solo si la transacción sigue activa
+            }
             e.printStackTrace();
+        } finally {
+            session.close();  // cerrar sesión siempre
         }
-
-        session.close();
     }
 
     private Date newDate(int year, int month, int day) {

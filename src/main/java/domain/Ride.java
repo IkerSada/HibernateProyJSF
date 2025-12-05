@@ -12,10 +12,10 @@ public class Ride implements Serializable {
     private Integer rideNumber;
 
     @Column(name = "fromCity")
-    private String from;
+    private String fromCity;
 
     @Column(name = "toCity")
-    private String to;
+    private String toCity;
 
     private int nPlaces;
 
@@ -31,8 +31,8 @@ public class Ride implements Serializable {
     public Ride() {}
 
     public Ride(String from, String to, Date date, int nPlaces, float price, Driver driver) {
-        this.from = from;
-        this.to = to;
+        this.fromCity = from;
+        this.toCity = to;
         this.nPlaces = nPlaces;
         this.date = date;
         this.price = price;
@@ -44,19 +44,19 @@ public class Ride implements Serializable {
     }
 
     public String getFrom() {
-        return from;
+        return fromCity;
     }
 
     public void setFrom(String origin) {
-        this.from = origin;
+        this.fromCity = origin;
     }
 
     public String getTo() {
-        return to;
+        return toCity;
     }
 
     public void setTo(String destination) {
-        this.to = destination;
+        this.toCity = destination;
     }
 
     public int getnPlaces() {
@@ -93,6 +93,6 @@ public class Ride implements Serializable {
 
     @Override
     public String toString() {
-        return rideNumber + ";" + from + ";" + to + ";" + date;
+        return rideNumber + ";" + fromCity + ";" + toCity + ";" + date;
     }
 }
