@@ -1,9 +1,8 @@
 package eredua.bean;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.primefaces.event.SelectEvent;
 
 import businessLogic.BLFacade;
 import domain.Ride;
@@ -70,14 +69,69 @@ public class CreateRideBean implements Serializable {
 	        System.out.println("Price: " + price);
 	        System.out.println("Driver Email: " + driverEmail);
 	        
-	        // Validar que todos los campos estén completos
-	        if (origin == null || origin.isEmpty() || 
-	            destination == null || destination.isEmpty() ||
-	            date == null || seats == null || price == 0) {
-	            
+	        // Validaciones manuales
+	        if (origin == null || origin.trim().isEmpty()) {
 	            FacesContext.getCurrentInstance().addMessage(null,
 	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-	                "Please fill all required fields"));
+	                "Depart city is required"));
+	            return;
+	        }
+	        
+	        if (destination == null || destination.trim().isEmpty()) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Arrival city is required"));
+	            return;
+	        }
+	        
+	        if (seats == null || seats <= 0) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Number of seats must be greater than 0"));
+	            return;
+	        }
+	        
+	        if (seats > 500) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Number of seats cannot exceed 500"));
+	            return;
+	        }
+	        
+	        if (price <= 0) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Price must be greater than 0"));
+	            return;
+	        }
+	        
+	        if (price > 500) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Price cannot exceed €500"));
+	            return;
+	        }
+	        
+	        if (date == null) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Date is required"));
+	            return;
+	        }
+	        
+	        // Validar que la fecha sea futura
+	        Date today = new Date();
+	        if (date.before(today)) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Ride date must be in the future"));
+	            return;
+	        }
+	        
+	        if (driverEmail == null || driverEmail.trim().isEmpty()) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
+	                "Driver email is required"));
 	            return;
 	        }
 	        
@@ -88,8 +142,14 @@ public class CreateRideBean implements Serializable {
 	            // Crear mensaje de éxito
 	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	            String successMessage = String.format(
-	                "Ride created successfully! %s → %s on %s with %d seats for €%.2f",
-	                origin, destination, sdf.format(date), seats, price);
+	                "Ride created successfully!<br/>" +
+	                "From: %s<br/>" +
+	                "To: %s<br/>" +
+	                "Date: %s<br/>" +
+	                "Seats: %d<br/>" +
+	                "Price: €%.2f<br/>" +
+	                "Driver: %s",
+	                origin, destination, sdf.format(date), seats, price, driverEmail);
 	            
 	            this.datua = successMessage;
 	            
@@ -98,13 +158,12 @@ public class CreateRideBean implements Serializable {
 	                new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", 
 	                "Ride created successfully!"));
 	            
-	            // DEBUG: Ride-a sortu ondoren
-	            System.out.println("Ride created successfully: " + newRide);
-	            System.out.println("Ride ID: " + newRide.getRideNumber());
+	            System.out.println("✅ Ride created successfully: " + newRide);
+	            System.out.println("✅ Ride ID: " + newRide.getRideNumber());
 	            
-	            // Limpiar el formulario (opcional)
-	            clearForm();
+	            // NO limpiar el formulario para ver los datos
 	        } else {
+	            System.out.println("❌ Failed to create ride (returned null)");
 	            FacesContext.getCurrentInstance().addMessage(null,
 	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
 	                "Failed to create ride"));
@@ -113,33 +172,25 @@ public class CreateRideBean implements Serializable {
 	        System.out.println("=====================");
 
 	    } catch (RideAlreadyExistException e) {
+	        System.out.println("❌ RideAlreadyExistException: " + e.getMessage());
 	        FacesContext.getCurrentInstance().addMessage(null,
 	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-	            "This ride already exists for the driver: " + e.getMessage()));
+	            "A ride with same values already exists for this driver"));
 	        
 	    } catch (RideMustBeLaterThanTodayException e) {
+	        System.out.println("❌ RideMustBeLaterThanTodayException: " + e.getMessage());
 	        FacesContext.getCurrentInstance().addMessage(null,
 	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-	            "Ride date must be later than today: " + e.getMessage()));
+	            "Ride date must be later than today"));
 	        
 	    } catch (Exception e) {
-	        System.out.println("ERROR creating ride: " + e.getMessage());
+	        System.out.println("❌ ERROR creating ride: " + e.getMessage());
 	        e.printStackTrace();
 	        
 	        FacesContext.getCurrentInstance().addMessage(null,
 	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", 
-	            "An error occurred while creating the ride: " + e.getMessage()));
+	            "An error occurred: " + e.getMessage()));
 	    }
-	}
-
-	// Método para limpiar el formulario
-	public void clearForm() {
-	    this.origin = null;
-	    this.destination = null;
-	    this.seats = null;
-	    this.price = 0;
-	    this.date = new Date();
-	    // No limpiar datua para que se muestre el mensaje de éxito
 	}
 
 	public String close() {
@@ -156,11 +207,13 @@ public class CreateRideBean implements Serializable {
 		this.datua = datuak;
 	}
 
-	public void onDateSelect(SelectEvent event) {
-		this.date = (Date) event.getObject();
-		FacesContext.getCurrentInstance().addMessage(null,
-				new FacesMessage("Data aukeratua: "+ this.date));
+	// Formularioa garbitzeko metodoa (aukerakoa)
+	public void clearForm() {
+		this.origin = null;
+		this.destination = null;
+		this.seats = null;
+		this.price = 0;
+		this.date = new Date();
+		this.datua = null;
 	}
-
-
 }

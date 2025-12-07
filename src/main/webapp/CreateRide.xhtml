@@ -11,127 +11,7 @@
         <h:head>
             <title>Create Ride</title>
             <style>
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    min-height: 100vh;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 20px;
-                }
-                
-                .form-container {
-                    width: 450px;
-                    background: white;
-                    padding: 40px;
-                    border-radius: 15px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                }
-                
-                .title {
-                    text-align: center;
-                    color: #2c3e50;
-                    margin-bottom: 30px;
-                    font-size: 28px;
-                    font-weight: bold;
-                }
-                
-                .form-group {
-                    margin-bottom: 25px;
-                }
-                
-                .label {
-                    display: block;
-                    color: #34495e;
-                    margin-bottom: 8px;
-                    font-weight: 600;
-                    font-size: 14px;
-                }
-                
-                .input-field {
-                    width: 100%;
-                    padding: 12px 15px;
-                    border: 2px solid #e0e0e0;
-                    border-radius: 8px;
-                    font-size: 14px;
-                    transition: all 0.3s;
-                }
-                
-                .input-field:focus {
-                    border-color: #3498db;
-                    outline: none;
-                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-                }
-                
-                .error-message {
-                    color: #e74c3c;
-                    font-size: 12px;
-                    margin-top: 5px;
-                    display: block;
-                }
-                
-                .create-button {
-                    width: 100%;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    padding: 15px;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    margin-top: 10px;
-                }
-                
-                .create-button:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-                }
-                
-                .success-box {
-                    background: #d4edda;
-                    color: #155724;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin-top: 25px;
-                    border-left: 5px solid #28a745;
-                    font-size: 14px;
-                }
-                
-                .link-container {
-                    text-align: center;
-                    margin-top: 30px;
-                    padding-top: 20px;
-                    border-top: 1px solid #eee;
-                }
-                
-                .nav-link {
-                    color: #3498db;
-                    text-decoration: none;
-                    font-weight: bold;
-                    font-size: 16px;
-                    transition: all 0.3s;
-                }
-                
-                .nav-link:hover {
-                    color: #2980b9;
-                    text-decoration: underline;
-                }
-                
-                .ui-calendar {
-                    width: 100%;
-                }
-                
-                .calendar-button {
-                    background: #3498db;
-                    color: white;
-                    border: none;
-                    padding: 10px 15px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                }
+                /* Mantén tus estilos actuales */
             </style>
         </h:head>
 
@@ -148,8 +28,6 @@
                                     styleClass="input-field"
                                     required="true"
                                     requiredMessage="Depart city is required">
-                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚ\s]+$"
-                                          message="Only letters and spaces allowed"/>
                         </h:inputText>
                         <h:message for="departCity" styleClass="error-message"/>
                     </div>
@@ -162,8 +40,6 @@
                                     styleClass="input-field"
                                     required="true"
                                     requiredMessage="Arrival city is required">
-                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚ\s]+$"
-                                          message="Only letters and spaces allowed"/>
                         </h:inputText>
                         <h:message for="arrivalCity" styleClass="error-message"/>
                     </div>
@@ -176,8 +52,6 @@
                                     styleClass="input-field"
                                     required="true"
                                     requiredMessage="Number of seats is required">
-                            <f:validateLongRange minimum="1" maximum="500"
-                                              message="Must be between 1 and 500"/>
                         </h:inputText>
                         <h:message for="seats" styleClass="error-message"/>
                     </div>
@@ -190,8 +64,6 @@
                                     styleClass="input-field"
                                     required="true"
                                     requiredMessage="Price is required">
-                            <f:validateLongRange minimum="1" maximum="500"
-                                              message="Must be between 1 and 500"/>
                         </h:inputText>
                         <h:message for="price" styleClass="error-message"/>
                     </div>
@@ -205,11 +77,26 @@
                                   mode="popup"
                                   pattern="yyyy-MM-dd"
                                   showButtonPanel="true"
-                                  style="width: 100%;"/>
+                                  style="width: 100%;"
+                                  required="true"
+                                  requiredMessage="Date is required"/>
                     </div>
 
-                    <!-- Driver Email (oculto o fijo) -->
-                    <h:inputHidden id="driverEmail" value="#{createRideBean.driverEmail}"/>
+                    <!-- Driver Email -->
+                    <div class="form-group">
+                        <span class="label">Driver Email:</span>
+                        <h:selectOneMenu id="driverEmail" 
+                                       value="#{createRideBean.driverEmail}"
+                                       styleClass="input-field"
+                                       required="true"
+                                       requiredMessage="Driver email is required">
+                            <f:selectItem itemLabel="Select driver..." itemValue="" />
+                            <f:selectItem itemLabel="driver1@gmail.com (Aitor Fernandez)" itemValue="driver1@gmail.com" />
+                            <f:selectItem itemLabel="driver2@gmail.com (Ane Gaztañaga)" itemValue="driver2@gmail.com" />
+                            <f:selectItem itemLabel="driver3@gmail.com (Test driver)" itemValue="driver3@gmail.com" />
+                        </h:selectOneMenu>
+                        <h:message for="driverEmail" styleClass="error-message"/>
+                    </div>
 
                     <!-- Submit Button -->
                     <div class="form-group">
@@ -228,7 +115,7 @@
 
                     <!-- Messages -->
                     <h:messages id="messages" 
-                              globalOnly="true"
+                              globalOnly="false"
                               infoClass="success-message"
                               errorClass="error-message"
                               style="margin-top: 20px;"/>
