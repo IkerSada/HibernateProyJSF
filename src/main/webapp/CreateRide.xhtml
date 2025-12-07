@@ -4,124 +4,244 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:o="http://omnifaces.org/ui">
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition>
-
     <f:view>
         <h:head>
             <title>Create Ride</title>
             <style>
-                .form-container {
-                    width: 420px;
-                    margin: 30px auto;
-                    padding: 25px;
-                    background: #fdfdfd;
-                    border-radius: 10px;
-                    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px;
                 }
-                .label {
+                
+                .form-container {
+                    width: 450px;
+                    background: white;
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                }
+                
+                .title {
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                    font-size: 28px;
                     font-weight: bold;
+                }
+                
+                .form-group {
+                    margin-bottom: 25px;
+                }
+                
+                .label {
+                    display: block;
                     color: #34495e;
-                    padding-bottom: 3px;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+                
+                .input-field {
+                    width: 100%;
+                    padding: 12px 15px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    transition: all 0.3s;
+                }
+                
+                .input-field:focus {
+                    border-color: #3498db;
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+                }
+                
+                .error-message {
+                    color: #e74c3c;
+                    font-size: 12px;
+                    margin-top: 5px;
                     display: block;
                 }
-                .button-space {
-                    margin-top: 15px;
-                }
-                .created-box {
-                    margin-top: 20px;
-                    padding: 12px;
+                
+                .create-button {
+                    width: 100%;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 15px;
                     border-radius: 8px;
-                    background: #ecf9f1;
-                    border-left: 5px solid #2ecc71;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    margin-top: 10px;
+                }
+                
+                .create-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+                }
+                
+                .success-box {
+                    background: #d4edda;
+                    color: #155724;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-top: 25px;
+                    border-left: 5px solid #28a745;
+                    font-size: 14px;
+                }
+                
+                .link-container {
+                    text-align: center;
+                    margin-top: 30px;
+                    padding-top: 20px;
+                    border-top: 1px solid #eee;
+                }
+                
+                .nav-link {
+                    color: #3498db;
+                    text-decoration: none;
+                    font-weight: bold;
+                    font-size: 16px;
+                    transition: all 0.3s;
+                }
+                
+                .nav-link:hover {
+                    color: #2980b9;
+                    text-decoration: underline;
+                }
+                
+                .ui-calendar {
+                    width: 100%;
+                }
+                
+                .calendar-button {
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    cursor: pointer;
                 }
             </style>
         </h:head>
 
         <h:body>
-
             <div class="form-container">
+                <h2 class="title">➕ Create New Ride</h2>
 
-                <h2 style="text-align:center; color:#2c3e50;">Create Ride</h2>
-
-                <h:form id="nireForm">
-
+                <h:form id="createForm">
                     <!-- Depart City -->
-                    <div>
+                    <div class="form-group">
                         <span class="label">Depart City:</span>
-                        <h:inputText id="departCity" value="#{createRideBean.origin}">
-                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚV\s]+$" />
+                        <h:inputText id="departCity" 
+                                    value="#{createRideBean.origin}"
+                                    styleClass="input-field"
+                                    required="true"
+                                    requiredMessage="Depart city is required">
+                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚ\s]+$"
+                                          message="Only letters and spaces allowed"/>
                         </h:inputText>
-                        <h:message for="departCity" style="color:red"/>
+                        <h:message for="departCity" styleClass="error-message"/>
                     </div>
 
                     <!-- Arrival City -->
-                    <div style="margin-top:15px;">
+                    <div class="form-group">
                         <span class="label">Arrival City:</span>
-                        <h:inputText id="arrivalCity" value="#{createRideBean.destination}">
-                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚV\s]+$" />
+                        <h:inputText id="arrivalCity" 
+                                    value="#{createRideBean.destination}"
+                                    styleClass="input-field"
+                                    required="true"
+                                    requiredMessage="Arrival city is required">
+                            <f:validateRegex pattern="^[a-zA-ZñÑçÇáéíóúÁÉÍÓÚ\s]+$"
+                                          message="Only letters and spaces allowed"/>
                         </h:inputText>
-                        <h:message for="arrivalCity" style="color:red"/>
+                        <h:message for="arrivalCity" styleClass="error-message"/>
                     </div>
 
                     <!-- Seats -->
-                    <div style="margin-top:15px;">
+                    <div class="form-group">
                         <span class="label">Number of Seats:</span>
-                        <h:inputText id="seats" value="#{createRideBean.seats}">
-                            <f:validateLongRange minimum="1" maximum="500"/>
+                        <h:inputText id="seats" 
+                                    value="#{createRideBean.seats}"
+                                    styleClass="input-field"
+                                    required="true"
+                                    requiredMessage="Number of seats is required">
+                            <f:validateLongRange minimum="1" maximum="500"
+                                              message="Must be between 1 and 500"/>
                         </h:inputText>
-                        <h:message for="seats" style="color:red"/>
+                        <h:message for="seats" styleClass="error-message"/>
                     </div>
 
                     <!-- Price -->
-                    <div style="margin-top:15px;">
-                        <span class="label">Price:</span>
-                        <h:inputText id="price" value="#{createRideBean.price}">
-                            <f:validateLongRange minimum="1" maximum="500"/>
+                    <div class="form-group">
+                        <span class="label">Price (€):</span>
+                        <h:inputText id="price" 
+                                    value="#{createRideBean.price}"
+                                    styleClass="input-field"
+                                    required="true"
+                                    requiredMessage="Price is required">
+                            <f:validateLongRange minimum="1" maximum="500"
+                                              message="Must be between 1 and 500"/>
                         </h:inputText>
-                        <h:message for="price" style="color:red"/>
+                        <h:message for="price" styleClass="error-message"/>
                     </div>
 
                     <!-- Date -->
-                    <div style="margin-top:15px;">
+                    <div class="form-group">
                         <span class="label">Date:</span>
-                        <p:calendar id="data" value="#{createRideBean.date}" navigator="true" mode="inline"/>
+                        <p:calendar id="date" 
+                                  value="#{createRideBean.date}"
+                                  navigator="true" 
+                                  mode="popup"
+                                  pattern="yyyy-MM-dd"
+                                  showButtonPanel="true"
+                                  style="width: 100%;"/>
                     </div>
 
-                    <!-- Button -->
-                    <div class="button-space" style="text-align:center;">
+                    <!-- Driver Email (oculto o fijo) -->
+                    <h:inputHidden id="driverEmail" value="#{createRideBean.driverEmail}"/>
+
+                    <!-- Submit Button -->
+                    <div class="form-group">
                         <h:commandButton value="Create Ride"
-                                         action="#{createRideBean.createRide}"
-                                         styleClass="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"/>
+                                       action="#{createRideBean.createRide}"
+                                       styleClass="create-button"/>
                     </div>
 
-                    <!-- Output Data -->
-                    <h:panelGroup id="sartutakoDatuak">
-                        <h:outputText value="Created Ride:"
-                                      rendered="#{not empty createRideBean.datua}"
-                                      style="font-weight:bold; display:block; margin-top:20px;"/>
-
-                        <h:outputText value="#{createRideBean.datua}"
-                                      rendered="#{not empty createRideBean.datua}"
-                                      styleClass="created-box"/>
+                    <!-- Success Message -->
+                    <h:panelGroup rendered="#{not empty createRideBean.datua}">
+                        <div class="success-box">
+                            <h3 style="margin-top: 0;">✅ Ride Created Successfully!</h3>
+                            <p>#{createRideBean.datua}</p>
+                        </div>
                     </h:panelGroup>
 
-                    <h:messages id="mezuak" style="color:blue; margin-top:10px;"/>
-
+                    <!-- Messages -->
+                    <h:messages id="messages" 
+                              globalOnly="true"
+                              infoClass="success-message"
+                              errorClass="error-message"
+                              style="margin-top: 20px;"/>
                 </h:form>
-            </div>
 
-            <!-- Link to QueryRides -->
-            <div style="text-align:center; margin-top:20px;">
-                <h4>TO QUERY RIDES:</h4>
-                <h:link value="→ Query Rides" outcome="QueryRides"
-                        style="font-size:16px; color:#2980b9;"/>
+                <!-- Navigation Link -->
+                <div class="link-container">
+                    <h4>Looking for existing rides?</h4>
+                    <h:link value="🔍 Query Rides" outcome="QueryRides"
+                           styleClass="nav-link"/>
+                </div>
             </div>
-
         </h:body>
     </f:view>
-
 </ui:composition>
 </html>

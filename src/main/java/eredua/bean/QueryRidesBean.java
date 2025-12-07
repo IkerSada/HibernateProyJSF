@@ -63,17 +63,6 @@ public class QueryRidesBean implements Serializable {
         }
     }
 
-    public void onDepartCityChange() {
-        System.out.println("Depart city changed to: " + selectedDepartCity);
-        loadArrivalCities();
-    }
-
-    public void onArrivalCityChange() {
-        System.out.println("Arrival city changed to: " + selectedArrivalCity);
-        if (selectedArrivalCity != null && !selectedArrivalCity.isEmpty()) {
-            refreshAllData(); // GEHITU
-        }
-    }
 
     private void loadArrivalCities() {
         try {
@@ -140,51 +129,8 @@ public class QueryRidesBean implements Serializable {
         return formattedDates;
     }
 
-    public void onDateSelect() {
-        System.out.println("Date selected: " + selectedDate);
-        
-        // Data garbitu
-        this.selectedDate = getDateWithoutTime(selectedDate);
-        System.out.println("Cleaned date: " + selectedDate);
-        
-        refreshAllData(); // ALDATU (aurretik loadDatesWithRides() eta searchRides() deitzen zen)
-    }
 
-    public void searchRides() {
-        try {
-            this.filteredRides = null;
-            
-            if (selectedDepartCity != null && !selectedDepartCity.isEmpty() &&
-                selectedArrivalCity != null && !selectedArrivalCity.isEmpty() &&
-                selectedDate != null) {
-                
-                System.out.println("Searching rides for: " + selectedDepartCity + " to " + selectedArrivalCity + " on " + selectedDate);
-                
-                BLFacade facadeBL = FacadeBean.getBusinessLogic();
-                
-                // Datuak lortzeko data garbitua erabili
-                Date cleanDate = getDateWithoutTime(selectedDate);
-                this.filteredRides = facadeBL.getRides(selectedDepartCity, selectedArrivalCity, cleanDate);
-                
-                System.out.println("Found " + (filteredRides != null ? filteredRides.size() : 0) + " rides");
-                
-                // Debug: ride bakoitzaren data erakutsi
-                if (filteredRides != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    for (Ride ride : filteredRides) {
-                        System.out.println("Ride date: " + sdf.format(ride.getDate()) + " by " + ride.getDriver().getName());
-                    }
-                }
-                
-                if (filteredRides == null || filteredRides.isEmpty()) {
-                    showInfo("No rides found for " + selectedDepartCity + " to " + selectedArrivalCity + " on selected date");
-                }
-            }
-        } catch (Exception e) {
-            showError("Error searching rides");
-            e.printStackTrace();
-        }
-    }
+
 
     // Datuak debug egiteko metodoa
     public void debugDates() {
@@ -253,6 +199,88 @@ public class QueryRidesBean implements Serializable {
 
     public List<Date> getDatesWithRides() { return datesWithRides; }
     public void setDatesWithRides(List<Date> datesWithRides) { this.datesWithRides = datesWithRides; }
+    
+    
+    
+    
+    public void onDepartCityChange() {
+        System.out.println("Depart city changed to: " + selectedDepartCity);
+        loadArrivalCities();
+    }
+
+    public void onArrivalCityChange() {
+        System.out.println("Arrival city changed to: " + selectedArrivalCity);
+        if (selectedArrivalCity != null && !selectedArrivalCity.isEmpty()) {
+            refreshData();
+        }
+    }
+
+    public void onDateSelect() {
+        System.out.println("Date selected: " + selectedDate);
+        
+        // Data garbitu
+        this.selectedDate = getDateWithoutTime(selectedDate);
+        System.out.println("Cleaned date: " + selectedDate);
+        
+        // Solo buscar rides si tenemos ciudades seleccionadas
+        if (selectedDepartCity != null && selectedArrivalCity != null) {
+            searchRides();
+        }
+    }
+
+    private void refreshData() {
+        if (selectedDepartCity != null && selectedArrivalCity != null) {
+            loadDatesWithRides();
+            
+            // Solo buscar rides si hay una fecha seleccionada
+            if (selectedDate != null) {
+                searchRides();
+            }
+        }
+    }
+
+    public void searchRides() {
+        try {
+            this.filteredRides = null;
+            
+            if (selectedDepartCity != null && !selectedDepartCity.isEmpty() &&
+                selectedArrivalCity != null && !selectedArrivalCity.isEmpty() &&
+                selectedDate != null) {
+                
+                System.out.println("Searching rides for: " + selectedDepartCity + 
+                                 " to " + selectedArrivalCity + " on " + selectedDate);
+                
+                BLFacade facadeBL = FacadeBean.getBusinessLogic();
+                
+                // Datuak lortzeko data garbitua erabili
+                Date cleanDate = getDateWithoutTime(selectedDate);
+                this.filteredRides = facadeBL.getRides(selectedDepartCity, selectedArrivalCity, cleanDate);
+                
+                System.out.println("Found " + (filteredRides != null ? filteredRides.size() : 0) + " rides");
+                
+                if (filteredRides == null || filteredRides.isEmpty()) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Info",
+                        "No rides found for the selected criteria"));
+                }
+            }
+        } catch (Exception e) {
+            showError("Error searching rides: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
  // Datuak guztiz eguneratzeko metodoa GEHITU

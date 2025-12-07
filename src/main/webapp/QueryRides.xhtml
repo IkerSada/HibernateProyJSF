@@ -16,91 +16,127 @@
             body {
                 font-family: Arial, sans-serif;
                 background: #f5f7fa;
+                padding: 20px;
             }
 
             .container {
-                max-width: 850px;
-                margin: 30px auto;
+                max-width: 900px;
+                margin: 0 auto;
                 background: white;
-                padding: 25px;
+                padding: 30px;
                 border-radius: 12px;
-                box-shadow: 0 0 12px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             }
 
             .section-title {
-                font-size: 22px;
-                color: #34495e;
-                margin-bottom: 15px;
+                font-size: 24px;
+                color: #2c3e50;
+                margin-bottom: 25px;
                 text-align: center;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
             }
 
             .form-block {
-                margin-bottom: 18px;
+                margin-bottom: 20px;
             }
 
             .label {
                 font-weight: bold;
                 display: block;
-                color: #2c3e50;
-                margin-bottom: 6px;
+                color: #34495e;
+                margin-bottom: 8px;
+                font-size: 14px;
             }
 
             select, .ui-inputfield {
                 width: 100%;
-                padding: 7px;
+                padding: 10px;
                 border-radius: 6px;
+                border: 1px solid #ddd;
             }
 
             .dates-info-box {
-                background: #eafaf1;
-                padding: 10px;
+                background: #e8f4fc;
+                padding: 15px;
                 border-radius: 8px;
                 margin-top: 20px;
-                border-left: 4px solid #2ecc71;
+                border-left: 5px solid #3498db;
             }
 
             .no-rides-box {
                 background: #fff3cd;
-                padding: 12px;
+                padding: 15px;
                 border-radius: 8px;
                 margin-top: 20px;
-                border-left: 4px solid #f1c40f;
+                border-left: 5px solid #f39c12;
+                color: #856404;
             }
 
             .rides-table-wrapper {
-                margin-top: 25px;
+                margin-top: 30px;
+                overflow-x: auto;
+            }
+
+            .rides-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
             }
 
             .rides-table th {
                 background: #3498db !important;
                 color: white;
-                padding: 10px;
+                padding: 12px;
+                text-align: left;
+                font-weight: bold;
             }
 
             .rides-table td {
-                padding: 8px;
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .rides-table tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            .button-link {
+                display: inline-block;
+                background: #2ecc71;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 15px;
+                font-weight: bold;
+            }
+
+            .button-link:hover {
+                background: #27ae60;
+            }
+
+            .ui-calendar {
+                width: 100%;
             }
         </style>
     </h:head>
 
     <h:body>
-
         <div class="container">
-
-            <h3 class="section-title">Query Rides</h3>
+            <h3 class="section-title">🔍 Query Rides</h3>
 
             <h:form id="queryForm">
-
                 <!-- DEPART CITY -->
                 <div class="form-block">
                     <span class="label">Depart City:</span>
                     <h:selectOneMenu id="departCity"
                                      value="#{queryRidesBean.selectedDepartCity}">
-                        <f:selectItems value="#{queryRidesBean.departCities}" />
+                        <f:selectItems value="#{queryRidesBean.departCities}" 
+                                      itemLabelEscaped="true"/>
                         <f:ajax event="change"
-                                execute="@this"
                                 listener="#{queryRidesBean.onDepartCityChange}"
-                                render="arrivalCity datesInfo ridesTable queryForm" />
+                                render="arrivalCity calendar datesPanel ridesPanel"/>
                     </h:selectOneMenu>
                 </div>
 
@@ -109,11 +145,11 @@
                     <span class="label">Arrival City:</span>
                     <h:selectOneMenu id="arrivalCity"
                                      value="#{queryRidesBean.selectedArrivalCity}">
-                        <f:selectItems value="#{queryRidesBean.arrivalCities}" />
+                        <f:selectItems value="#{queryRidesBean.arrivalCities}"
+                                      itemLabelEscaped="true"/>
                         <f:ajax event="change"
-                                execute="@this"
                                 listener="#{queryRidesBean.onArrivalCityChange}"
-                                render="datesInfo ridesTable queryForm" />
+                                render="calendar datesPanel ridesPanel"/>
                     </h:selectOneMenu>
                 </div>
 
@@ -122,28 +158,32 @@
                     <span class="label">Select Date:</span>
                     <p:calendar id="calendar"
                                 value="#{queryRidesBean.selectedDate}"
-                                navigator="true" mode="popup"
-                                pattern="yyyy-MM-dd">
+                                navigator="true" 
+                                mode="popup"
+                                pattern="yyyy-MM-dd"
+                                showButtonPanel="true">
                         <p:ajax event="dateSelect"
                                 listener="#{queryRidesBean.onDateSelect}"
-                                update="datesInfo ridesTable queryForm" />
+                                update="ridesPanel"/>
                     </p:calendar>
                 </div>
 
                 <!-- DATES INFO -->
-                <h:panelGroup id="datesInfo">
+                <h:panelGroup id="datesPanel">
                     <div class="dates-info-box"
-                         rendered="#{not empty queryRidesBean.datesWithRides}">
+                         rendered="#{not empty queryRidesBean.datesWithRidesFormatted}">
                         
-                        <h:outputText value="Rides available this month on: "
-                                      style="font-weight:bold;" />
+                        <h:outputText value="📅 Rides available this month on: "
+                                      style="font-weight:bold; color: #2c3e50;" />
 
-                        <br /><br />
-
+                        <br/><br/>
+                        
                         <h:dataTable value="#{queryRidesBean.datesWithRidesFormatted}"
-                                     var="formattedDate">
+                                     var="formattedDate"
+                                     style="width: auto;">
                             <h:column>
-                                <h:outputText value="#{formattedDate}" />
+                                <h:outputText value="📌 #{formattedDate}" 
+                                              style="display: block; margin: 5px 0;"/>
                             </h:column>
                         </h:dataTable>
 
@@ -151,80 +191,104 @@
                 </h:panelGroup>
 
                 <!-- RIDES TABLE -->
-                <div class="rides-table-wrapper">
-                    <h:dataTable id="ridesTable"
-                                 value="#{queryRidesBean.filteredRides}"
-                                 var="ride"
-                                 rendered="#{not empty queryRidesBean.filteredRides}"
-                                 styleClass="rides-table">
-
-                        <f:facet name="header">
-                            <h:outputText value="Available rides on " />
+                <h:panelGroup id="ridesPanel">
+                    <div class="rides-table-wrapper"
+                         rendered="#{not empty queryRidesBean.filteredRides}">
+                        
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">
+                            Available rides on 
                             <h:outputText value="#{queryRidesBean.selectedDate}">
                                 <f:convertDateTime pattern="yyyy-MM-dd" />
                             </h:outputText>
-                        </f:facet>
+                        </h4>
+                        
+                        <h:dataTable id="ridesTable"
+                                     value="#{queryRidesBean.filteredRides}"
+                                     var="ride"
+                                     styleClass="rides-table"
+                                     rowClasses="odd-row, even-row">
+                            
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="👤 Driver" />
+                                </f:facet>
+                                #{ride.driver.name}
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">Driver</f:facet>
-                            #{ride.driver.name}
-                        </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="📍 From" />
+                                </f:facet>
+                                #{ride.from}
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">From</f:facet>
-                            #{ride.from}
-                        </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="🎯 To" />
+                                </f:facet>
+                                #{ride.to}
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">To</f:facet>
-                            #{ride.to}
-                        </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="📅 Date" />
+                                </f:facet>
+                                <h:outputText value="#{ride.date}">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">Date</f:facet>
-                            <h:outputText value="#{ride.date}">
-                                <f:convertDateTime pattern="yyyy-MM-dd" />
-                            </h:outputText>
-                        </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="💺 Seats" />
+                                </f:facet>
+                                #{ride.nPlaces}
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">Seats</f:facet>
-                            #{ride.nPlaces}
-                        </h:column>
+                            <h:column>
+                                <f:facet name="header">
+                                    <h:outputText value="💰 Price (€)" />
+                                </f:facet>
+                                #{ride.price}
+                            </h:column>
 
-                        <h:column>
-                            <f:facet name="header">Price (€)</f:facet>
-                            #{ride.price}
-                        </h:column>
+                        </h:dataTable>
+                    </div>
 
-                    </h:dataTable>
-                </div>
-
-                <!-- NO RIDES MESSAGE -->
-                <h:panelGroup
-                    rendered="#{empty queryRidesBean.filteredRides
-                             and queryRidesBean.selectedDepartCity != null
-                             and queryRidesBean.selectedArrivalCity != null
-                             and queryRidesBean.selectedDate != null}">
-
-                    <div class="no-rides-box">
-                        <h:outputText value="❌ No rides found for the selected route on " />
+                    <!-- NO RIDES MESSAGE -->
+                    <div class="no-rides-box"
+                         rendered="#{empty queryRidesBean.filteredRides
+                                  and queryRidesBean.selectedDepartCity != null
+                                  and queryRidesBean.selectedArrivalCity != null
+                                  and queryRidesBean.selectedDate != null}">
+                        
+                        <h:outputText value="❌ No rides found for " />
+                        <h:outputText value="#{queryRidesBean.selectedDepartCity}" style="font-weight:bold;"/>
+                        <h:outputText value=" → " />
+                        <h:outputText value="#{queryRidesBean.selectedArrivalCity}" style="font-weight:bold;"/>
+                        <h:outputText value=" on " />
                         <h:outputText value="#{queryRidesBean.selectedDate}">
                             <f:convertDateTime pattern="yyyy-MM-dd" />
                         </h:outputText>
                     </div>
                 </h:panelGroup>
-
             </h:form>
 
-            <br />
-
-            <h4>TO CREATE A RIDE:</h4>
-            <h:link value="→ Create Ride" outcome="CreateRide"
-                    style="color:#3498db; font-size:16px;" />
-
+            <br/><br/>
+            
+            <h4 style="color: #2c3e50; border-top: 1px solid #eee; padding-top: 20px;">
+                TO CREATE A NEW RIDE:
+            </h4>
+            <h:link value="➕ Create Ride" outcome="CreateRide"
+                    styleClass="button-link"/>
+                    
+            <br/><br/>
+            
+            <!-- Debug button (opcional) -->
+            <h:commandButton value="Debug Dates" 
+                           action="#{queryRidesBean.debugDates}"
+                           style="background: #95a5a6; color: white; border: none; padding: 8px 15px; border-radius: 4px;"/>
         </div>
-
     </h:body>
 </f:view>
 </ui:composition>
