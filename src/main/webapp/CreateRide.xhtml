@@ -104,6 +104,15 @@
                                        action="#{createRideBean.createRide}"
                                        styleClass="create-button"/>
                     </div>
+                    
+                    
+                    
+                    <div class="link-container">
+                    <h4>BIDAI GUZTIAK NAHI DITUZU?</h4>
+                    <h:link value="Bidai Guztiak" outcome="BidaiGuztiak"
+                           styleClass="nav-link"/>
+                </div>
+                    
 
                     <!-- Success Message -->
                     <h:panelGroup rendered="#{not empty createRideBean.datua}">

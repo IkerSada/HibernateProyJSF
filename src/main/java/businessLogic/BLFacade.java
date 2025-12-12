@@ -31,6 +31,9 @@ public interface BLFacade  {
 	 */
 	 public List<String> getDestinationCities(String from);
 
+	 public List<Driver> getAllDrivers();
+
+	 List<Ride> getRidesByDriver(String driverEmail);
 
 	/**
 	 * This method creates a ride for a driver

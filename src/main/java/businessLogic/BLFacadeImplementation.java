@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import dataAccess.HibernateDataAccess;
+import domain.Driver;
 import domain.Ride;
 import exceptions.RideMustBeLaterThanTodayException;
 import exceptions.RideAlreadyExistException;
@@ -20,6 +21,12 @@ public class BLFacadeImplementation implements BLFacade {
     public BLFacadeImplementation(HibernateDataAccess da) {
         System.out.println("Creating BLFacadeImplementation with injected Hibernate DAO");
         dbManager = da;
+    }
+
+    
+    @Override
+    public List<Driver> getAllDrivers() {
+        return dbManager.getAllDrivers();
     }
 
     @Override
@@ -42,6 +49,10 @@ public class BLFacadeImplementation implements BLFacade {
     @Override
     public List<Ride> getRides(String from, String to, Date date) {
         return dbManager.getRides(from, to, date);
+    }
+    @Override
+    public List<Ride> getRidesByDriver(String driverEmail) {
+        return dbManager.getRidesByDriver(driverEmail);
     }
 
     @Override

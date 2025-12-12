@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+    <f:view>
+        <h:head>
+            <title>Bidai Guztiak</title>
+            <style>
+                .label {
+                    font-weight: bold;
+                    margin-right: 10px;
+                }
+                .button {
+                    margin-top: 10px;
+                    padding: 8px 15px;
+                    background: #3498db;
+                    color: white;
+                    border-radius: 5px;
+                    border: none;
+                }
+                .table {
+                    margin-top: 20px;
+                }
+            </style>
+        </h:head>
+
+        <h:body>
+
+<h:form id="filterForm">
+
+    <!-- SELECT DRIVER -->
+    <h:panelGroup>
+        <span class="label">Driver:</span>
+
+        <h:selectOneMenu id="driverSelect"
+                         value="#{bidaiGuztiakBean.selectedDriver}">
+            <f:selectItem itemLabel="Select driver..." itemValue="" />
+
+            <f:selectItems value="#{bidaiGuztiakBean.allDrivers}"
+                           var="d"
+                           itemValue="#{d.email}"
+                           itemLabel="#{d.name} (#{d.email})" />
+        </h:selectOneMenu>
+    </h:panelGroup>
+
+
+    <br/>
+    <h:commandButton value="IKUSI BIDAIAK"
+                     action="#{bidaiGuztiakBean.loadRidesOfDriver}"
+                     update="ridesPanel"
+                     styleClass="button"/>
+
+    <h:panelGroup id="ridesPanel" class="table"
+                  rendered="#{not empty bidaiGuztiakBean.driverRides}">
+        
+        <h3>DRIVEREN BIDAIAK:</h3>
+
+        <h:dataTable value="#{bidaiGuztiakBean.driverRides}"
+                     var="ride"
+                     border="1"
+                     style="width: 100%; border-collapse: collapse;">
+
+            <h:column>
+                <f:facet name="header">DEPART CITY</f:facet>
+                #{ride.from}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header"> ARRIVAL CITY</f:facet>
+                #{ride.to}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">RIDE DATE</f:facet>
+                <h:outputText value="#{ride.date}">
+                    <f:convertDateTime pattern="yyyy-MM-dd"/>
+                </h:outputText>
+            </h:column>
+
+
+            <h:column>
+                <f:facet name="header">PRICE</f:facet>
+                #{ride.price}
+            </h:column>
+
+        </h:dataTable>
+    </h:panelGroup>
+
+</h:form>
+
+        </h:body>
+    </f:view>
+</ui:composition>
+</html>

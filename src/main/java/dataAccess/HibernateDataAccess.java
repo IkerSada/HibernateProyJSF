@@ -218,6 +218,36 @@ public class HibernateDataAccess {
         session.close();
         return res;
     }
+    
+
+public List<Ride> getRidesByDriver(String driverEmail) {
+
+ Session session = HibernateUtil.getSessionFactory().openSession();
+
+ Query<Ride> query = session.createQuery(
+         "from Ride r where r.driver.email = :email order by r.date",
+         Ride.class);
+
+ query.setParameter("email", driverEmail);
+
+ List<Ride> rides = query.getResultList();
+ session.close();
+
+ return rides;
+}
+
+public List<Driver> getAllDrivers() {
+
+ Session session = HibernateUtil.getSessionFactory().openSession();
+
+ Query<Driver> query =
+         session.createQuery("from Driver d order by d.name", Driver.class);
+
+ List<Driver> drivers = query.getResultList();
+ session.close();
+
+ return drivers;
+}
 
     private Date firstDayMonth(Date d) {
         Calendar cal = Calendar.getInstance();
